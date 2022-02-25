@@ -10,11 +10,32 @@ router.post('/', (req, res) => {
     deployLink: req.body.deployedLink,
     description: req.body.description
   })
+  .then((project) =>{
+    //check if category field is filled out
+    if(req.body.category) {
+      //if so, find or create to make sure we don't have duplicate categories
+      db.category.findOrCreate({
+        where: {
+          name: req.body.category
+        }
+      })
+      //
+      .then((category) =>{
+        project.addCategory(category)
+      })
+    }
+  })
   .then((project) => {
     res.redirect('/')
   })
   .catch((error) => {
     res.status(400).render('main/404')
+  })
+
+  db.category.findOrCreate({
+    where: {
+      name: req.body.category
+    }
   })
 })
 
